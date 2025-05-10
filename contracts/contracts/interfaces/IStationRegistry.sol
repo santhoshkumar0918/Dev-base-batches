@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import ".contracts/libraries/Structs.sol";  // Import the Structs library
+import "./libraries/Structs.sol";  // Import the Structs library
 
 interface IStationRegistry {
     function registerStation(
