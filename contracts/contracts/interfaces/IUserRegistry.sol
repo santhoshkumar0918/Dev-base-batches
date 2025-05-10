@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
 interface IUserRegistry {
     function registerUser(string memory name, string memory email) external;
     function updateUser(string memory name, string memory email) external;

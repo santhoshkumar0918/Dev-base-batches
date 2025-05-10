@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
 interface IChargingSession {
     function startSession(uint256 stationId, uint256 chargerId) external;
     function endSession(uint256 sessionId, uint256 energyConsumed) external;

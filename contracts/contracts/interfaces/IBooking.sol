@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "../libraries/Structs.sol";
+
 interface IBooking {
     function createBooking(
         uint256 stationId,
