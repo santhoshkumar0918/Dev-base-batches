@@ -4,16 +4,43 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Zap, Users, Clock, ChevronRight, AlertCircle } from "lucide-react";
 
+interface Station {
+  id: string;
+  name: string;
+  address: string;
+  status: "Available" | "Busy" | "Limited" | "Offline";
+  power: number;
+  queue: number;
+  waitTime: number;
+  availableIn?: number;
+  distanceFromRoute: number;
+  rate: number;
+}
+
+interface Vehicle {
+  batteryCapacity: number;
+  range: number;
+  consumption: number;
+}
+
+interface Route {
+  startLocation: string;
+  destination: string;
+  distance: number;
+  duration: string;
+  recommendedStations: Station[];
+}
+
 export default function ChargingStations({
   route,
   vehicle,
   batteryStatus,
   onStationSelect,
 }: {
-  route: any;
-  vehicle: any;
+  route: Route | null;
+  vehicle: Vehicle | null;
   batteryStatus: number;
-  onStationSelect: (station: any) => void;
+  onStationSelect: (station: Station) => void;
 }) {
   if (!route || !route.recommendedStations) {
     return null;
@@ -144,7 +171,7 @@ function getStatusClass(status: string) {
   }
 }
 
-function calculateChargingTime(vehicle: any, stationPower: number) {
+function calculateChargingTime(vehicle: Vehicle | null, stationPower: number) {
   if (!vehicle) return 0;
 
   // Simple formula:
@@ -153,7 +180,7 @@ function calculateChargingTime(vehicle: any, stationPower: number) {
   return Math.round(((vehicle.batteryCapacity * 0.8) / stationPower) * 60);
 }
 
-function calculateCost(vehicle: any, rate: number) {
+function calculateCost(vehicle: Vehicle | null, rate: number) {
   if (!vehicle) return 0;
 
   // Simple formula: Battery capacity * 0.8 * rate

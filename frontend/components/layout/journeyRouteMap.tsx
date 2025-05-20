@@ -4,16 +4,43 @@ import { useEffect, useRef } from "react";
 import { MapPin, Zap } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
+interface Station {
+  id: string;
+  name: string;
+  address: string;
+  status: "Available" | "Busy" | "Limited" | "Offline";
+  power: number;
+  queue: number;
+  waitTime: number;
+  availableIn?: number;
+  distanceFromRoute: number;
+  rate: number;
+}
+
+interface Vehicle {
+  batteryCapacity: number;
+  range: number;
+  consumption: number;
+}
+
+interface Route {
+  startLocation: string;
+  destination: string;
+  distance: number;
+  duration: string;
+  recommendedStations: Station[];
+}
+
 export default function RouteMap({
   route,
   batteryStatus,
   vehicle,
   onStationSelect,
 }: {
-  route: any;
+  route: Route | null;
   batteryStatus: number;
-  vehicle: any;
-  onStationSelect: (station: any) => void;
+  vehicle: Vehicle | null;
+  onStationSelect: (station: Station) => void;
 }) {
   const mapRef = useRef<HTMLDivElement>(null);
 
