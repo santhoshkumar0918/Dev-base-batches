@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // "use client";
 
 // import { useEffect, useRef } from "react";
@@ -439,14 +433,45 @@
 //     // Start the initial charging effect for car1
 //     createChargingEffect(car1);
 
-//     // Animation sequence - UPDATED to move cars horizontally
+//     // Animation sequence - UPDATED to make first car leave before second arrives
 //     const startAnimationSequence = () => {
+//       // First car leaves 2-3 seconds before second car arrives
+//       gsap.to(car1.position, {
+//         x: -15, // Moves far to the left (completely off screen)
+//         duration: 5,
+//         ease: "power1.inOut",
+//         delay: 3, // Start leaving after 3 seconds
+//         onStart: () => {
+//           // Remove charging cable from first car
+//           if (cableRef.current) {
+//             scene.remove(cableRef.current);
+//           }
+          
+//           // Clear charging effect
+//           if (chargingEffectIntervalRef.current) {
+//             clearInterval(chargingEffectIntervalRef.current);
+//           }
+          
+//           // Animate wheels for car1 as it leaves
+//           gsap.to({}, {
+//             duration: 5,
+//             onUpdate: () => {
+//               wheelsRef.current.forEach(wheel => {
+//                 if (wheel && wheel.parent && wheel.parent.parent === car1) {
+//                   wheel.rotation.x -= 0.2;
+//                 }
+//               });
+//             }
+//           });
+//         }
+//       });
+      
 //       // After a delay, animate the second car arriving from the right side
 //       gsap.to(car2.position, {
 //         x: 0, // Moves from right to center
 //         duration: 4,
 //         ease: "power2.inOut",
-//         delay: 3,
+//         delay: 6, // Delay arrival until first car is gone (3s delay + ~3s travel time)
 //         onStart: () => {
 //           // Make the wheels spin while the car is moving
 //           gsap.to({}, {
@@ -461,67 +486,27 @@
 //           });
 //         },
 //         onComplete: () => {
-//           // First car leaves - moving completely off screen to the left
-//           gsap.to(car1.position, {
-//             x: -15, // Moves far to the left (completely off screen)
-//             duration: 5,
-//             ease: "power1.inOut",
-//             onStart: () => {
-//               // Remove charging cable from first car
-//               if (cableRef.current) {
-//                 scene.remove(cableRef.current);
-//               }
-              
-//               // Clear charging effect
-//               if (chargingEffectIntervalRef.current) {
-//                 clearInterval(chargingEffectIntervalRef.current);
-//               }
-              
-//               // Animate wheels for car1 as it leaves
-//               gsap.to({}, {
-//                 duration: 5,
-//                 onUpdate: () => {
-//                   wheelsRef.current.forEach(wheel => {
-//                     if (wheel && wheel.parent && wheel.parent.parent === car1) {
-//                       wheel.rotation.x -= 0.2;
-//                     }
-//                   });
-//                 }
-//               });
-//             }
-//           });
+//           // Create new charging cable for car2
+//           const newEndPoint = new THREE.Vector3(
+//             car2.position.x - 0.9,
+//             car2.position.y + 0.5,
+//             car2.position.z - 1.8
+//           );
+//           const newCable = createChargingCable(startPoint, newEndPoint);
+//           scene.add(newCable);
+//           cableRef.current = newCable;
           
-//           // After first car starts leaving, second car moves to charging position
-//           gsap.to(car2.position, {
-//             x: 0, // Final position at center
-//             z: 2, // Adjust z position if needed
-//             delay: 1.5,
-//             duration: 1.5,
-//             ease: "power2.inOut",
-//             onComplete: () => {
-//               // Create new charging cable for car2
-//               const newEndPoint = new THREE.Vector3(
-//                 car2.position.x - 0.9,
-//                 car2.position.y + 0.5,
-//                 car2.position.z - 1.8
-//               );
-//               const newCable = createChargingCable(startPoint, newEndPoint);
-//               scene.add(newCable);
-//               cableRef.current = newCable;
-              
-//               // Start charging effect for car2
-//               createChargingEffect(car2);
-              
-//               // Reset animation sequence after a delay
-//               setTimeout(() => {
-//                 // Reset car1 position to the right side to prepare for next cycle
-//                 car1.position.set(12, 0, 2);
-                
-//                 // Reset animation loop
-//                 setTimeout(startAnimationSequence, 5000);
-//               }, 12000);
-//             }
-//           });
+//           // Start charging effect for car2
+//           createChargingEffect(car2);
+          
+//           // Reset animation sequence after a delay
+//           setTimeout(() => {
+//             // Reset car1 position to the right side to prepare for next cycle
+//             car1.position.set(12, 0, 2);
+            
+//             // Reset animation loop
+//             setTimeout(startAnimationSequence, 5000);
+//           }, 12000);
 //         }
 //       });
 //     };
@@ -605,9 +590,7 @@
 //   );
 // };
 
-
-// export default EVChargingScene;
-
+// export default LandingPage;
 
 
 
@@ -1047,82 +1030,94 @@ const EVChargingScene = () => {
     // Start the initial charging effect for car1
     createChargingEffect(car1);
 
-    // Animation sequence - UPDATED to make first car leave before second arrives
+    // Animation sequence - UPDATED for proper looping with car switching
     const startAnimationSequence = () => {
-      // First car leaves 2-3 seconds before second car arrives
-      gsap.to(car1.position, {
-        x: -15, // Moves far to the left (completely off screen)
-        duration: 5,
-        ease: "power1.inOut",
-        delay: 3, // Start leaving after 3 seconds
-        onStart: () => {
-          // Remove charging cable from first car
-          if (cableRef.current) {
-            scene.remove(cableRef.current);
-          }
-          
-          // Clear charging effect
-          if (chargingEffectIntervalRef.current) {
-            clearInterval(chargingEffectIntervalRef.current);
-          }
-          
-          // Animate wheels for car1 as it leaves
-          gsap.to({}, {
-            duration: 5,
-            onUpdate: () => {
-              wheelsRef.current.forEach(wheel => {
-                if (wheel && wheel.parent && wheel.parent.parent === car1) {
-                  wheel.rotation.x -= 0.2;
-                }
-              });
-            }
-          });
-        }
-      });
+      let isFirstAnimation = true;
       
-      // After a delay, animate the second car arriving from the right side
-      gsap.to(car2.position, {
-        x: 0, // Moves from right to center
-        duration: 4,
-        ease: "power2.inOut",
-        delay: 6, // Delay arrival until first car is gone (3s delay + ~3s travel time)
-        onStart: () => {
-          // Make the wheels spin while the car is moving
-          gsap.to({}, {
-            duration: 4,
-            onUpdate: () => {
-              wheelsRef.current.forEach(wheel => {
-                if (wheel && wheel.parent && wheel.parent.parent === car2) {
-                  wheel.rotation.x -= 0.2;
-                }
-              });
+      const animationLoop = () => {
+        // Get the currently active car (the one at the charging station)
+        const currentCar = isFirstAnimation ? car1 : car2;
+        const nextCar = isFirstAnimation ? car2 : car1;
+        
+        // Move current car away
+        gsap.to(currentCar.position, {
+          x: -15, // Moves far to the left (completely off screen)
+          duration: 5,
+          ease: "power1.inOut",
+          onStart: () => {
+            // Remove charging cable
+            if (cableRef.current) {
+              scene.remove(cableRef.current);
             }
-          });
-        },
-        onComplete: () => {
-          // Create new charging cable for car2
-          const newEndPoint = new THREE.Vector3(
-            car2.position.x - 0.9,
-            car2.position.y + 0.5,
-            car2.position.z - 1.8
-          );
-          const newCable = createChargingCable(startPoint, newEndPoint);
-          scene.add(newCable);
-          cableRef.current = newCable;
-          
-          // Start charging effect for car2
-          createChargingEffect(car2);
-          
-          // Reset animation sequence after a delay
-          setTimeout(() => {
-            // Reset car1 position to the right side to prepare for next cycle
-            car1.position.set(12, 0, 2);
             
-            // Reset animation loop
-            setTimeout(startAnimationSequence, 5000);
-          }, 12000);
-        }
-      });
+            // Clear charging effect
+            if (chargingEffectIntervalRef.current) {
+              clearInterval(chargingEffectIntervalRef.current);
+            }
+            
+            // Animate wheels for current car as it leaves
+            gsap.to({}, {
+              duration: 5,
+              onUpdate: () => {
+                wheelsRef.current.forEach(wheel => {
+                  if (wheel && wheel.parent && wheel.parent.parent === currentCar) {
+                    wheel.rotation.x -= 0.2;
+                  }
+                });
+              }
+            });
+          },
+          onComplete: () => {
+            // Move the car that just left back to the start position for the next cycle
+            // We reposition it immediately but off screen to prepare for next appearance
+            currentCar.position.set(12, 0, 2);
+          }
+        });
+        
+        // Bring in next car after a delay
+        gsap.to(nextCar.position, {
+          x: 0, // Moves from right to center
+          duration: 4,
+          ease: "power2.inOut",
+          delay: 2, // Shorter delay for more continuous animation
+          onStart: () => {
+            // Make the wheels spin while the car is moving
+            gsap.to({}, {
+              duration: 4,
+              onUpdate: () => {
+                wheelsRef.current.forEach(wheel => {
+                  if (wheel && wheel.parent && wheel.parent.parent === nextCar) {
+                    wheel.rotation.x -= 0.2;
+                  }
+                });
+              }
+            });
+          },
+          onComplete: () => {
+            // Create new charging cable for next car
+            const newEndPoint = new THREE.Vector3(
+              nextCar.position.x - 0.9,
+              nextCar.position.y + 0.5,
+              nextCar.position.z - 1.8
+            );
+            const newCable = createChargingCable(startPoint, newEndPoint);
+            scene.add(newCable);
+            cableRef.current = newCable;
+            
+            // Start charging effect for next car
+            createChargingEffect(nextCar);
+            
+            // Toggle which car is active for the next cycle
+            isFirstAnimation = !isFirstAnimation;
+            
+            // Schedule the next animation cycle after a delay
+            setTimeout(animationLoop, 8000); // Allow some time for charging before starting next cycle
+          }
+        });
+      };
+      
+      // Start the animation loop
+      animationLoop();
     };
     
     // Start the animation sequence
@@ -1169,7 +1164,7 @@ const EVChargingScene = () => {
   return (
     <div 
       ref={containerRef} 
-      className="w-full h-full min-h-[500px] rounded-xl overflow-hidden"
+      className="w-full h-full rounded-xl overflow-hidden"
       aria-label="3D animation of Ferrari cars at an electric charging station with cars arriving and departing"
     />
   );
@@ -1178,7 +1173,7 @@ const EVChargingScene = () => {
 // Main component for the landing page
 const LandingPage = () => {
   return (
-    <div className="w-full h-screen bg-gray-100 flex flex-col lg:flex-row">
+    <div className="w-full min-h-screen bg-gray-100 flex flex-col lg:flex-row">
       {/* Left Side - Text and Button */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center lg:items-start p-8 lg:p-16">
         <div className="max-w-lg">
@@ -1197,7 +1192,7 @@ const LandingPage = () => {
       </div>
 
       {/* Right Side - 3D Scene */}
-      <div className="w-full lg:w-1/2 h-[500px] lg:h-full">
+      <div className="w-full lg:w-1/2 h-[500px] lg:h-screen">
         <EVChargingScene />
       </div>
     </div>
