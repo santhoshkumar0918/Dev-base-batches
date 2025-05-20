@@ -1,3 +1,4 @@
+// app/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -13,7 +14,8 @@ import {
   Car,
   Home,
   Building2,
-  ChevronsDown,
+  Navigation,
+  Check,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,14 +35,15 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="border-b sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+      {/* Navigation */}
+      <header className="border-b sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Zap className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">DEV</span>
           </div>
 
-          <nav className="hidden md:flex gap-6 font-medium">
+          <nav className="hidden md:flex gap-8 font-medium">
             <Link
               href="#features"
               className="text-muted-foreground hover:text-primary transition-colors"
@@ -62,31 +65,26 @@ export default function HomePage() {
           </nav>
 
           <div className="flex items-center gap-4">
-            {isConnected ? (
-              <Link href="/dashboard">
-                <Button variant="outline">Dashboard</Button>
-              </Link>
-            ) : (
-              <Link href="/register">
-                <Button variant="outline">Sign Up</Button>
-              </Link>
-            )}
+            <Link href="/register">
+              <Button variant="outline" size="sm">
+                Sign Up
+              </Button>
+            </Link>
             <ConnectButton />
           </div>
         </div>
       </header>
 
       <main className="flex-1">
-        {/* Hero  */}
-        <section className="py-20 md:py-28 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 -z-10" />
-          <div className="container relative z-10">
-            <div className="max-w-4xl mx-auto text-center mb-16">
+        {/* Hero Section */}
+        <section className="relative py-20 md:py-28 bg-gradient-to-br from-muted/50 to-background overflow-hidden">
+          <div className="container mx-auto px-4 flex flex-col items-center">
+            <div className="w-full max-w-3xl text-center mb-16">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-                India's First Decentralized
-                <span className="text-primary"> Electric Vehicle</span> Network
+                India's First Decentralized{" "}
+                <span className="text-primary">Electric Vehicle</span> Network
               </h1>
-              <p className="text-xl text-muted-foreground mb-8 md:text-2xl">
+              <p className="text-xl text-muted-foreground mb-8">
                 Eliminating range anxiety with a community-powered charging
                 network that connects drivers with thousands of charging points
                 across the country.
@@ -101,9 +99,10 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-6xl h-72 md:h-96 rounded-lg overflow-hidden shadow-xl">
+            <div className="relative w-full max-w-5xl h-72 md:h-96 bg-gray-200 rounded-xl overflow-hidden shadow-xl">
+              {/* Map placeholder with centered location card */}
               <div className="absolute inset-0 bg-gradient-to-r from-primary/30 via-primary/20 to-background flex items-center justify-center">
-                <div className="p-6 bg-background/60 backdrop-blur-md rounded-xl border shadow-lg w-72">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-background/80 backdrop-blur-md rounded-xl border shadow-lg p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="font-medium">Current Location</h3>
@@ -114,7 +113,7 @@ export default function HomePage() {
                     <MapPin className="text-primary h-5 w-5" />
                   </div>
                   <div className="space-y-3">
-                    <div className="bg-background/80 p-3 rounded-lg border flex justify-between">
+                    <div className="bg-background/90 p-3 rounded-lg border flex justify-between">
                       <div>
                         <p className="font-medium">Ananya's Home</p>
                         <p className="text-xs text-muted-foreground">
@@ -125,7 +124,7 @@ export default function HomePage() {
                         ₹12/kWh
                       </div>
                     </div>
-                    <div className="bg-background/80 p-3 rounded-lg border flex justify-between">
+                    <div className="bg-background/90 p-3 rounded-lg border flex justify-between">
                       <div>
                         <p className="font-medium">Central Mall</p>
                         <p className="text-xs text-muted-foreground">
@@ -140,58 +139,61 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="container mt-16">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
-              <div className="text-center">
-                <p className="text-3xl md:text-4xl font-bold text-primary">
-                  2500+
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Virtual Charging Points
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl md:text-4xl font-bold text-primary">
-                  12
-                </p>
-                <p className="text-sm text-muted-foreground">Cities Covered</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl md:text-4xl font-bold text-primary">
-                  750+
-                </p>
-                <p className="text-sm text-muted-foreground">EV Drivers</p>
-              </div>
-              <div className="text-center">
-                <p className="text-3xl md:text-4xl font-bold text-primary">
-                  100%
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Trustless Transactions
-                </p>
+            {/* Stats */}
+            <div className="w-full mt-16">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-4 md:gap-x-10 text-center">
+                <div>
+                  <p className="text-3xl md:text-4xl font-bold text-primary">
+                    2500+
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Virtual Charging Points
+                  </p>
+                </div>
+                <div>
+                  <p className="text-3xl md:text-4xl font-bold text-primary">
+                    12
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Cities Covered
+                  </p>
+                </div>
+                <div>
+                  <p className="text-3xl md:text-4xl font-bold text-primary">
+                    750+
+                  </p>
+                  <p className="text-sm text-muted-foreground">EV Drivers</p>
+                </div>
+                <div>
+                  <p className="text-3xl md:text-4xl font-bold text-primary">
+                    100%
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Trustless Transactions
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Features */}
-        <section id="features" className="py-20 bg-muted/50">
-          <div className="container">
+        <section id="features" className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">
                 Why Choose DEV Network?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Our decentralized platform solves the chicken-and-egg problem of
-                EV infrastructure by instantly activating thousands of potential
+                Our decentralized platform solves India's EV infrastructure
+                challenge by instantly activating thousands of potential
                 charging points.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card>
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              <Card className="bg-background border">
                 <CardHeader>
                   <Zap className="h-10 w-10 text-primary mb-2" />
                   <CardTitle>Smart Journey Planning</CardTitle>
@@ -205,7 +207,7 @@ export default function HomePage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-background border">
                 <CardHeader>
                   <Shield className="h-10 w-10 text-primary mb-2" />
                   <CardTitle>Blockchain-Secured Payments</CardTitle>
@@ -219,7 +221,7 @@ export default function HomePage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-background border">
                 <CardHeader>
                   <BadgePercent className="h-10 w-10 text-primary mb-2" />
                   <CardTitle>Smart Rewards System</CardTitle>
@@ -238,7 +240,7 @@ export default function HomePage() {
 
         {/* How it Works */}
         <section id="how-it-works" className="py-20">
-          <div className="container">
+          <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">How DEV Works</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -247,240 +249,258 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="relative">
-              <div className="absolute left-1/2 -translate-x-1/2 h-full w-1 bg-muted md:block hidden"></div>
+            <div className="max-w-5xl mx-auto">
+              <div className="relative">
+                {/* Timeline line */}
+                <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-muted transform md:-translate-x-1/2"></div>
 
-              <div className="space-y-24 relative">
-                <div className="md:grid md:grid-cols-2 md:gap-8 items-center">
-                  <div className="md:text-right p-6">
-                    <div className="absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white items-center justify-center font-bold hidden md:flex">
-                      1
-                    </div>
-                    <h3 className="text-xl font-bold mb-2">
-                      Register & Connect Wallet
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Create your account as a driver or host and connect your
-                      wallet for secure transactions.
-                    </p>
-                  </div>
-                  <div className="bg-muted/30 rounded-lg p-6 mt-4 md:mt-0">
-                    <div className="rounded-lg border bg-card p-4 text-card-foreground shadow">
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Zap className="h-5 w-5 text-primary" />
+                {/* Steps */}
+                <div className="space-y-16">
+                  {/* Step 1 */}
+                  <div className="relative grid md:grid-cols-2 gap-8 items-center">
+                    <div className="order-2 md:order-1 md:text-right">
+                      <div className="relative">
+                        <div className="absolute top-0 left-0 md:left-auto md:right-0 -translate-y-1/2 translate-x-2 md:translate-x-1/2 z-10 w-12 h-12 rounded-full bg-primary text-background flex items-center justify-center font-bold shadow-lg">
+                          1
                         </div>
-                        <div>
-                          <h4 className="font-medium">DEV Registration</h4>
-                          <p className="text-xs text-muted-foreground">
-                            Choose your role
-                          </p>
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start gap-2"
-                        >
-                          <Car className="h-4 w-4" /> I'm an EV Driver
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start gap-2"
-                        >
-                          <Home className="h-4 w-4" /> I'm a Charging Host
-                        </Button>
+                        <h3 className="text-xl font-bold mb-2 mt-2">
+                          Register & Connect Wallet
+                        </h3>
+                        <p className="text-muted-foreground">
+                          Create your account as a driver or host and connect
+                          your wallet for secure transactions.
+                        </p>
                       </div>
                     </div>
-                  </div>
-                </div>
-
-                <div className="md:grid md:grid-cols-2 md:gap-8 items-center">
-                  <div className="bg-muted/30 rounded-lg p-6 md:order-first mt-4 md:mt-0">
-                    <div className="rounded-lg border bg-card p-4 text-card-foreground shadow">
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <MapPin className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">Find Charging Points</h4>
-                          <p className="text-xs text-muted-foreground">
-                            Near your destination
-                          </p>
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="rounded-md border p-2 flex justify-between items-center">
-                          <div className="flex gap-2">
-                            <Building2 className="h-5 w-5 text-muted-foreground" />
-                            <div>
-                              <p className="text-sm font-medium">
-                                City Centre Mall
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                3.2 km away • 22kW
-                              </p>
-                            </div>
-                          </div>
-                          <Button size="sm" variant="secondary">
-                            Book
-                          </Button>
-                        </div>
-                        <div className="rounded-md border p-2 flex justify-between items-center">
-                          <div className="flex gap-2">
-                            <Home className="h-5 w-5 text-muted-foreground" />
-                            <div>
-                              <p className="text-sm font-medium">
-                                Rajesh's Parking
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                1.5 km away • 7kW
-                              </p>
-                            </div>
-                          </div>
-                          <Button size="sm" variant="secondary">
-                            Book
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white items-center justify-center font-bold hidden md:flex">
-                      2
-                    </div>
-                    <h3 className="text-xl font-bold mb-2">
-                      Find or List Charging Points
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Drivers can find and book available charging points, while
-                      hosts can list their electrical capacity.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="md:grid md:grid-cols-2 md:gap-8 items-center">
-                  <div className="md:text-right p-6">
-                    <div className="absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white items-center justify-center font-bold hidden md:flex">
-                      3
-                    </div>
-                    <h3 className="text-xl font-bold mb-2">
-                      Charge & Pay Securely
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Arrive at your chosen location, charge your vehicle, and
-                      payments are automatically processed through smart
-                      contracts.
-                    </p>
-                  </div>
-                  <div className="bg-muted/30 rounded-lg p-6 mt-4 md:mt-0">
-                    <div className="rounded-lg border bg-card p-4 text-card-foreground shadow">
-                      <div className="flex justify-between items-center mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                            <Zap className="h-5 w-5 text-green-600" />
+                    <div className="order-1 md:order-2 bg-muted/20 rounded-xl p-6 shadow-sm border">
+                      <div className="rounded-lg bg-background p-4 border shadow">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Zap className="h-5 w-5 text-primary" />
                           </div>
                           <div>
-                            <h4 className="font-medium">
-                              Charging in Progress
-                            </h4>
+                            <h4 className="font-medium">DEV Registration</h4>
                             <p className="text-xs text-muted-foreground">
-                              Ananya's Home Charger
+                              Choose your role
                             </p>
                           </div>
                         </div>
-                        <div className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
-                          Active
+                        <div className="space-y-3">
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start gap-2"
+                          >
+                            <Car className="h-4 w-4" /> I'm an EV Driver
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start gap-2"
+                          >
+                            <Home className="h-4 w-4" /> I'm a Charging Host
+                          </Button>
                         </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            Energy delivered
-                          </span>
-                          <span className="font-medium">12.8 kWh</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            Time elapsed
-                          </span>
-                          <span className="font-medium">2h 15m</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">
-                            Current cost
-                          </span>
-                          <span className="font-medium">₹153.60</span>
-                        </div>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-green-500 rounded-full"
-                            style={{ width: "65%" }}
-                          ></div>
-                        </div>
-                        <Button className="w-full mt-2">
-                          End Charging Session
-                        </Button>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="md:grid md:grid-cols-2 md:gap-8 items-center">
-                  <div className="bg-muted/30 rounded-lg p-6 md:order-first mt-4 md:mt-0">
-                    <div className="rounded-lg border bg-card p-4 text-card-foreground shadow">
-                      <div className="flex items-center gap-2 mb-4">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <BadgePercent className="h-5 w-5 text-primary" />
+                  {/* Step 2 */}
+                  <div className="relative grid md:grid-cols-2 gap-8 items-center">
+                    <div className="bg-muted/20 rounded-xl p-6 shadow-sm border">
+                      <div className="rounded-lg bg-background p-4 border shadow">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <MapPin className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">
+                              Find Charging Points
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              Near your destination
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-medium">Rewards Summary</h4>
-                          <p className="text-xs text-muted-foreground">
-                            Your activity this month
-                          </p>
+                        <div className="space-y-3">
+                          <div className="rounded-md border p-2 flex justify-between items-center">
+                            <div className="flex gap-2">
+                              <Building2 className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">
+                                  City Centre Mall
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  3.2 km away • 22kW
+                                </p>
+                              </div>
+                            </div>
+                            <Button size="sm" variant="secondary">
+                              Book
+                            </Button>
+                          </div>
+                          <div className="rounded-md border p-2 flex justify-between items-center">
+                            <div className="flex gap-2">
+                              <Home className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">
+                                  Rajesh's Parking
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  1.5 km away • 7kW
+                                </p>
+                              </div>
+                            </div>
+                            <Button size="sm" variant="secondary">
+                              Book
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                      <div className="space-y-3">
-                        <div className="rounded-md border p-2">
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm font-medium">
-                              Off-peak charging
-                            </span>
-                            <span className="text-sm text-green-600">
-                              +15 DEV
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            Charged during grid low-demand hours
-                          </p>
+                    </div>
+                    <div>
+                      <div className="relative">
+                        <div className="absolute top-0 left-0 -translate-y-1/2 translate-x-2 z-10 w-12 h-12 rounded-full bg-primary text-background flex items-center justify-center font-bold shadow-lg">
+                          2
                         </div>
-                        <div className="rounded-md border p-2">
-                          <div className="flex justify-between mb-1">
-                            <span className="text-sm font-medium">
-                              Flexible schedule
-                            </span>
-                            <span className="text-sm text-green-600">
-                              +8 DEV
-                            </span>
+                        <h3 className="text-xl font-bold mb-2 mt-2">
+                          Find or List Charging Points
+                        </h3>
+                        <p className="text-muted-foreground">
+                          Drivers can find and book available charging points,
+                          while hosts can list their electrical capacity.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="relative grid md:grid-cols-2 gap-8 items-center">
+                    <div className="order-2 md:order-1 md:text-right">
+                      <div className="relative">
+                        <div className="absolute top-0 left-0 md:left-auto md:right-0 -translate-y-1/2 translate-x-2 md:translate-x-1/2 z-10 w-12 h-12 rounded-full bg-primary text-background flex items-center justify-center font-bold shadow-lg">
+                          3
+                        </div>
+                        <h3 className="text-xl font-bold mb-2 mt-2">
+                          Charge & Pay Securely
+                        </h3>
+                        <p className="text-muted-foreground">
+                          Arrive at your chosen location, charge your vehicle,
+                          and payments are automatically processed through smart
+                          contracts.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="order-1 md:order-2 bg-muted/20 rounded-xl p-6 shadow-sm border">
+                      <div className="rounded-lg bg-background p-4 border shadow">
+                        <div className="flex justify-between items-center mb-4">
+                          <div className="flex items-center gap-2">
+                            <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                              <Zap className="h-5 w-5 text-green-600" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium">
+                                Charging in Progress
+                              </h4>
+                              <p className="text-xs text-muted-foreground">
+                                Ananya's Home Charger
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            Accepted alternative charging time
-                          </p>
+                          <div className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                            Active
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Energy delivered
+                            </span>
+                            <span className="font-medium">12.8 kWh</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Time elapsed
+                            </span>
+                            <span className="font-medium">2h 15m</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">
+                              Current cost
+                            </span>
+                            <span className="font-medium">₹153.60</span>
+                          </div>
+                          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-green-500 rounded-full"
+                              style={{ width: "65%" }}
+                            ></div>
+                          </div>
+                          <Button className="w-full mt-2">
+                            End Charging Session
+                          </Button>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <div className="absolute left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-primary text-white  items-center justify-center font-bold hidden md:flex">
-                      4
+
+                  {/* Step 4 */}
+                  <div className="relative grid md:grid-cols-2 gap-8 items-center">
+                    <div className="bg-muted/20 rounded-xl p-6 shadow-sm border">
+                      <div className="rounded-lg bg-background p-4 border shadow">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <BadgePercent className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">Rewards Summary</h4>
+                            <p className="text-xs text-muted-foreground">
+                              Your activity this month
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="rounded-md border p-2">
+                            <div className="flex justify-between mb-1">
+                              <span className="text-sm font-medium">
+                                Off-peak charging
+                              </span>
+                              <span className="text-sm text-green-600">
+                                +15 DEV
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Charged during grid low-demand hours
+                            </p>
+                          </div>
+                          <div className="rounded-md border p-2">
+                            <div className="flex justify-between mb-1">
+                              <span className="text-sm font-medium">
+                                Flexible schedule
+                              </span>
+                              <span className="text-sm text-green-600">
+                                +8 DEV
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              Accepted alternative charging time
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold mb-2">
-                      Earn Rewards & Build Network
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Both drivers and hosts earn DEV tokens for positive
-                      behaviors that help optimize the network for everyone.
-                    </p>
+                    <div>
+                      <div className="relative">
+                        <div className="absolute top-0 left-0 -translate-y-1/2 translate-x-2 z-10 w-12 h-12 rounded-full bg-primary text-background flex items-center justify-center font-bold shadow-lg">
+                          4
+                        </div>
+                        <h3 className="text-xl font-bold mb-2 mt-2">
+                          Earn Rewards & Build Network
+                        </h3>
+                        <p className="text-muted-foreground">
+                          Both drivers and hosts earn DEV tokens for positive
+                          behaviors that help optimize the network for everyone.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -489,8 +509,8 @@ export default function HomePage() {
         </section>
 
         {/* Join the Network */}
-        <section id="join-network" className="py-20 bg-primary/5">
-          <div className="container">
+        <section id="join-network" className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold mb-4">Join the DEV Network</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -500,137 +520,144 @@ export default function HomePage() {
               </p>
             </div>
 
-            <Tabs defaultValue="driver" className="max-w-3xl mx-auto">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger
-                  value="driver"
-                  onClick={() => setActiveTab("driver")}
-                >
-                  I'm an EV Driver
-                </TabsTrigger>
-                <TabsTrigger value="host" onClick={() => setActiveTab("host")}>
-                  I'm a Charging Host
-                </TabsTrigger>
-              </TabsList>
+            <div className="max-w-4xl mx-auto">
+              <Tabs defaultValue="driver" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-8">
+                  <TabsTrigger
+                    value="driver"
+                    onClick={() => setActiveTab("driver")}
+                  >
+                    I'm an EV Driver
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="host"
+                    onClick={() => setActiveTab("host")}
+                  >
+                    I'm a Charging Host
+                  </TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="driver" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>EV Driver Benefits</CardTitle>
-                    <CardDescription>
-                      Find reliable charging wherever you go
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <Zap className="h-4 w-4 text-green-600" />
+                <TabsContent value="driver" className="space-y-6">
+                  <Card className="border">
+                    <CardHeader>
+                      <CardTitle>EV Driver Benefits</CardTitle>
+                      <CardDescription>
+                        Find reliable charging wherever you go
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="flex gap-4">
+                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                          <Check className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">Expanded Network</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Access thousands of charging points across
+                            residential, commercial, and municipal locations.
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium">Expanded Network</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Access thousands of charging points across
-                          residential, commercial, and municipal locations.
-                        </p>
+                      <div className="flex gap-4">
+                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                          <Navigation className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">
+                            Smart Journey Planning
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            Eliminate range anxiety with AI-powered routing
+                            tailored to your vehicle.
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <Zap className="h-4 w-4 text-green-600" />
+                      <div className="flex gap-4">
+                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                          <BadgePercent className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">Token Rewards</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Earn DEV tokens for flexible charging behavior that
+                            can be used for discounts.
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium">Smart Journey Planning</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Eliminate range anxiety with AI-powered routing
-                          tailored to your vehicle.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <Zap className="h-4 w-4 text-green-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Token Rewards</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Earn DEV tokens for flexible charging behavior that
-                          can be used for discounts.
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full">Join as a Driver</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
+                    </CardContent>
+                    <CardFooter>
+                      <Button className="w-full">Join as a Driver</Button>
+                    </CardFooter>
+                  </Card>
+                </TabsContent>
 
-              <TabsContent value="host" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Charging Host Benefits</CardTitle>
-                    <CardDescription>
-                      Monetize your electrical capacity
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <Zap className="h-4 w-4 text-green-600" />
+                <TabsContent value="host" className="space-y-6">
+                  <Card className="border">
+                    <CardHeader>
+                      <CardTitle>Charging Host Benefits</CardTitle>
+                      <CardDescription>
+                        Monetize your electrical capacity
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      <div className="flex gap-4">
+                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                          <Zap className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">New Revenue Stream</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Earn income from your existing electrical
+                            infrastructure with minimal investment.
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium">New Revenue Stream</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Earn income from your existing electrical
-                          infrastructure with minimal investment.
-                        </p>
+                      <div className="flex gap-4">
+                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                          <Check className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">Full Control</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Set your own availability, pricing, and access
+                            preferences with our flexible system.
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <Zap className="h-4 w-4 text-green-600" />
+                      <div className="flex gap-4">
+                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                          <Shield className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium">Secure Transactions</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Receive guaranteed payments through
+                            blockchain-secured smart contracts.
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium">Full Control</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Set your own availability, pricing, and access
-                          preferences with our flexible system.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                        <Zap className="h-4 w-4 text-green-600" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Secure Transactions</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Receive guaranteed payments through blockchain-secured
-                          smart contracts.
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full">Become a Host</Button>
-                  </CardFooter>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                    </CardContent>
+                    <CardFooter>
+                      <Button className="w-full">Become a Host</Button>
+                    </CardFooter>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-20 bg-primary relative overflow-hidden">
+        <section className="py-16 md:py-20 bg-primary relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:14px_24px]"></div>
           </div>
-          <div className="container relative z-10">
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold text-white mb-4">
                 Ready to Join India's EV Revolution?
               </h2>
-              <p className="text-xl text-white/80 mb-8">
+              <p className="text-lg text-white/80 mb-8">
                 Be part of the solution to India's EV infrastructure challenge
                 while earning rewards and reducing your carbon footprint.
               </p>
@@ -653,7 +680,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t py-12 bg-muted/30">
-        <div className="container">
+        <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">

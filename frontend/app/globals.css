@@ -120,3 +120,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+.rainbow-kit-connect-button {
+  position: relative;
+}
+
+[data-rk] .rk-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+[data-rk] .rk-account-button {
+  position: relative;
+}
