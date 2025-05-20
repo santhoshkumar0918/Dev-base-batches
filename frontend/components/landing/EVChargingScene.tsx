@@ -782,7 +782,7 @@ const EVChargingScene = () => {
         // Load Ferrari model - Path must match where your model is stored
         loader.load(
             '/models/ferrari.glb',
-            (gltf: THREE.GLTF) => {
+            (gltf: GLTF) => {
                 const carModel = gltf.scene.children[0] as THREE.Object3D;
                 
                 // Apply materials
@@ -891,8 +891,14 @@ const EVChargingScene = () => {
     car2Ref.current = car2;
 
     // Charging cable (connected to first car)
-    const createChargingCable = (startPoint, endPoint) => {
-      const cablePoints = [];
+    interface ChargingCablePoints extends Array<THREE.Vector3> {}
+
+    interface ChargingCable {
+      (startPoint: THREE.Vector3, endPoint: THREE.Vector3): THREE.Mesh<THREE.TubeGeometry, THREE.MeshStandardMaterial>;
+    }
+
+    const createChargingCable: ChargingCable = (startPoint, endPoint) => {
+      const cablePoints: ChargingCablePoints = [];
       cablePoints.push(startPoint);
       
       // Add control points for cable curve
@@ -908,7 +914,7 @@ const EVChargingScene = () => {
         color: 0x000000,
         roughness: 0.6,
       });
-      const cable = new THREE.Mesh(cableGeometry, cableMaterial);
+      const cable = new THREE.Mesh<THREE.TubeGeometry, THREE.MeshStandardMaterial>(cableGeometry, cableMaterial);
       cable.castShadow = true;
       
       return cable;
@@ -930,14 +936,20 @@ const EVChargingScene = () => {
     cableRef.current = cable;
 
     // Enhanced function to create more realistic charging effect
-    const createChargingEffect = (targetCar) => {
+    interface ChargingEffectTargetCar extends THREE.Group {}
+
+    interface ChargingEffect {
+      (): void;
+    }
+
+    const createChargingEffect = (targetCar: ChargingEffectTargetCar) => {
       // Clear any existing charging effect
       if (chargingEffectIntervalRef.current) {
         clearInterval(chargingEffectIntervalRef.current);
       }
       
       // Get target position based on car position
-      let targetPosition;
+      let targetPosition: THREE.Vector3;
       if (targetCar === car1) {
         // Updated port position for car1
         targetPosition = new THREE.Vector3(
@@ -955,7 +967,7 @@ const EVChargingScene = () => {
       }
       
       // Create enhanced charging effect with particles
-      const chargingEffect = () => {
+      const chargingEffect: ChargingEffect = () => {
         // Create multiple sparks for a more dramatic effect
         for (let i = 0; i < 3; i++) {
           const sparkGeometry = new THREE.SphereGeometry(0.03 + Math.random() * 0.03, 8, 8);
