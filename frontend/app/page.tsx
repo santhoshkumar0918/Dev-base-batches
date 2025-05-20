@@ -28,6 +28,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Header from "@/components/layout/Header";
+import EVChargingScene from "@/components/landing/EVChargingScene";
 
 export default function HomePage() {
   const { isConnected } = useAccount();
@@ -35,148 +37,12 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Navigation */}
-      <header className="border-b sticky top-0 z-50 w-full bg-background/95 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">DEV</span>
-          </div>
-
-          <nav className="hidden md:flex gap-8 font-medium">
-            <Link
-              href="#features"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Features
-            </Link>
-            <Link
-              href="#how-it-works"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              How It Works
-            </Link>
-            <Link
-              href="#join-network"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Join Network
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <Link href="/register">
-              <Button variant="outline" size="sm">
-                Sign Up
-              </Button>
-            </Link>
-            <ConnectButton />
-          </div>
-        </div>
-      </header>
+      {/* Imported Header Component */}
+      <Header />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative py-20 md:py-28 bg-gradient-to-br from-muted/50 to-background overflow-hidden">
-          <div className="container mx-auto px-4 flex flex-col items-center">
-            <div className="w-full max-w-3xl text-center mb-16">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-                India's First Decentralized{" "}
-                <span className="text-primary">Electric Vehicle</span> Network
-              </h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                Eliminating range anxiety with a community-powered charging
-                network that connects drivers with thousands of charging points
-                across the country.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="gap-2">
-                  Find Charging Points <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button size="lg" variant="outline" className="gap-2">
-                  Become a Host <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="relative w-full max-w-5xl h-72 md:h-96 bg-gray-200 rounded-xl overflow-hidden shadow-xl">
-              {/* Map placeholder with centered location card */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/30 via-primary/20 to-background flex items-center justify-center">
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 bg-background/80 backdrop-blur-md rounded-xl border shadow-lg p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="font-medium">Current Location</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Finding nearest...
-                      </p>
-                    </div>
-                    <MapPin className="text-primary h-5 w-5" />
-                  </div>
-                  <div className="space-y-3">
-                    <div className="bg-background/90 p-3 rounded-lg border flex justify-between">
-                      <div>
-                        <p className="font-medium">Ananya's Home</p>
-                        <p className="text-xs text-muted-foreground">
-                          2.1 km • Available now
-                        </p>
-                      </div>
-                      <div className="text-green-500 text-sm font-medium">
-                        ₹12/kWh
-                      </div>
-                    </div>
-                    <div className="bg-background/90 p-3 rounded-lg border flex justify-between">
-                      <div>
-                        <p className="font-medium">Central Mall</p>
-                        <p className="text-xs text-muted-foreground">
-                          3.5 km • 1 spot free
-                        </p>
-                      </div>
-                      <div className="text-green-500 text-sm font-medium">
-                        ₹15/kWh
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="w-full mt-16">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-4 md:gap-x-10 text-center">
-                <div>
-                  <p className="text-3xl md:text-4xl font-bold text-primary">
-                    2500+
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Virtual Charging Points
-                  </p>
-                </div>
-                <div>
-                  <p className="text-3xl md:text-4xl font-bold text-primary">
-                    12
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Cities Covered
-                  </p>
-                </div>
-                <div>
-                  <p className="text-3xl md:text-4xl font-bold text-primary">
-                    750+
-                  </p>
-                  <p className="text-sm text-muted-foreground">EV Drivers</p>
-                </div>
-                <div>
-                  <p className="text-3xl md:text-4xl font-bold text-primary">
-                    100%
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Trustless Transactions
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Imported Landing Page Component */}
+        <EVChargingScene />
 
         {/* Features */}
         <section id="features" className="py-20 bg-muted/30">
@@ -818,34 +684,6 @@ export default function HomePage() {
                   viewBox="0 0 16 16"
                 >
                   <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
-                </svg>
-              </Link>
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z" />
-                </svg>
-              </Link>
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
                 </svg>
               </Link>
               <Link
