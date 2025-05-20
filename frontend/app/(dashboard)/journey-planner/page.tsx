@@ -7,12 +7,13 @@ import BatteryMonitor from "@/components/layout/journeyBatteryMonitor";
 import ChargingStations from "@/components/layout/journeyChargingStations";
 import ReservationSystem from "@/components/layout/journeyReservationSystem";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Route, Vehicle, Station } from "@/lib/types";
 
 export default function JourneyPlanner() {
-  const [route, setRoute] = useState(null);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [route, setRoute] = useState<Route | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [batteryStatus, setBatteryStatus] = useState(80);
-  const [selectedStation, setSelectedStation] = useState(null);
+  const [selectedStation, setSelectedStation] = useState<Station | null>(null);
 
   return (
     <DashboardLayout>
