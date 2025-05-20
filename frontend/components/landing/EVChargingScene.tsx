@@ -33,15 +33,16 @@
 //     sceneRef.current = scene;
 //     scene.background = new THREE.Color(0xf1f5f9); // Light background that matches the design
 
-//     // Camera setup
+//     // Camera setup - Modified to better view cars from the front
 //     const camera = new THREE.PerspectiveCamera(
-//       40,
+//       45,
 //       containerRef.current.clientWidth / containerRef.current.clientHeight,
 //       0.1,
 //       1000
 //     );
 //     cameraRef.current = camera;
-//     camera.position.set(5, 3, 8);
+//     // Updated camera position to view cars more from the front
+//     camera.position.set(0, 3, 10);
 
 //     // Renderer setup
 //     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -89,13 +90,13 @@
 //     ground.receiveShadow = true;
 //     scene.add(ground);
 
-//     // Charging station
+//     // Charging station - moved to the right side of the scene
 //     const stationGeometry = new THREE.BoxGeometry(1, 2, 1);
 //     const stationMaterial = new THREE.MeshStandardMaterial({ 
 //       color: 0x3b82f6, // Primary color
 //     });
 //     const chargingStation = new THREE.Mesh(stationGeometry, stationMaterial);
-//     chargingStation.position.set(0, 0.5, 0);
+//     chargingStation.position.set(3, 0.5, 0); // Moved to the right
 //     chargingStation.castShadow = true;
 //     chargingStation.receiveShadow = true;
 //     scene.add(chargingStation);
@@ -238,12 +239,12 @@
 //                     console.error("Error adding shadow to car:", error);
 //                 }
 
-//                 // Add charging port to the car
+//                 // Add charging port to the car - moved to the side for better connection
 //                 const carPortGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.05, 16);
 //                 const carPortMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
 //                 const carPort = new THREE.Mesh(carPortGeometry, carPortMaterial);
 //                 carPort.rotation.z = Math.PI / 2;
-//                 carPort.position.set(-1.8, 0.5, -0.9);
+//                 carPort.position.set(-0.9, 0.5, -1.8); // Moved to side of car
 //                 carModel.add(carPort);
 
 //                 // Scale down the model to fit the scene
@@ -270,7 +271,7 @@
 //                 const carPortMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
 //                 const carPort = new THREE.Mesh(carPortGeometry, carPortMaterial);
 //                 carPort.rotation.z = Math.PI / 2;
-//                 carPort.position.set(-1.8, 0.5, -0.9);
+//                 carPort.position.set(-0.9, 0.5, -1.8);
 //                 carGroup.add(carPort);
 //             }
 //         );
@@ -278,18 +279,21 @@
 //         return { carGroup, wheels };
 //     };
 
-//     // Car 1 (already charging)
+//     // Car 1 (already charging) - positioned to face more toward the camera
 //     const car1Result = createFerrariCar(0x64748b); // Gray color
 //     const car1 = car1Result.carGroup;
-//     car1.position.set(3, 0, 0.2);
-//     car1.rotation.y = -Math.PI / 20; // Slight angle
+//     // Changed positioning to show car more from the front
+//     car1.position.set(0, 0, 2);
+//     car1.rotation.y = Math.PI / 2; // Rotated to face camera/front
 //     scene.add(car1);
 //     car1Ref.current = car1;
 
-//     // Car 2 (arriving)
+//     // Car 2 (arriving) - will come from behind the camera
 //     const car2Result = createFerrariCar(0xe11d48); // Red color
 //     const car2 = car2Result.carGroup;
-//     car2.position.set(15, 0, 0.2);
+//     // Car 2 starts off-screen and will come in from the back
+//     car2.position.set(0, 0, 15);
+//     car2.rotation.y = Math.PI / 2; // Rotated to face front
 //     scene.add(car2);
 //     car2Ref.current = car2;
 
@@ -317,9 +321,17 @@
 //       return cable;
 //     };
 
-//     // Create initial cable connected to car1
-//     const startPoint = new THREE.Vector3(0.4, 0.8, 0.5);
-//     const endPoint = new THREE.Vector3(car1.position.x - 1.8, 0.5, car1.position.z - 0.7);
+//     // Create initial cable connected to car1 - updated coordinates
+//     const startPoint = new THREE.Vector3(
+//       chargingStation.position.x + 0.4, 
+//       chargingStation.position.y + 0.8, 
+//       chargingStation.position.z + 0.5
+//     );
+//     const endPoint = new THREE.Vector3(
+//       car1.position.x - 0.9, 
+//       car1.position.y + 0.5, 
+//       car1.position.z - 1.8
+//     );
 //     const cable = createChargingCable(startPoint, endPoint);
 //     scene.add(cable);
 //     cableRef.current = cable;
@@ -334,9 +346,19 @@
 //       // Get target position based on car position
 //       let targetPosition;
 //       if (targetCar === car1) {
-//         targetPosition = new THREE.Vector3(car1.position.x - 1.8, 0.5, car1.position.z - 0.7);
+//         // Updated port position for car1
+//         targetPosition = new THREE.Vector3(
+//           car1.position.x - 0.9,
+//           car1.position.y + 0.5,
+//           car1.position.z - 1.8
+//         );
 //       } else {
-//         targetPosition = new THREE.Vector3(car2.position.x - 1.8, 0.5, car2.position.z - 0.7);
+//         // Updated port position for car2
+//         targetPosition = new THREE.Vector3(
+//           car2.position.x - 0.9,
+//           car2.position.y + 0.5,
+//           car2.position.z - 1.8
+//         );
 //       }
       
 //       // Create enhanced charging effect with particles
@@ -353,9 +375,9 @@
           
 //           // Position at charging station port with some randomness
 //           spark.position.set(
-//             0.4 + Math.random() * 0.1 - 0.05,
-//             0.8 + Math.random() * 0.1 - 0.05,
-//             0.5 + Math.random() * 0.1 - 0.05
+//             startPoint.x + Math.random() * 0.1 - 0.05,
+//             startPoint.y + Math.random() * 0.1 - 0.05,
+//             startPoint.z + Math.random() * 0.1 - 0.05
 //           );
           
 //           scene.add(spark);
@@ -415,11 +437,19 @@
 //     // Start the initial charging effect for car1
 //     createChargingEffect(car1);
 
-//     // Animation sequence with more realistic car movement
-//     const startAnimationSequence = () => {
-//       // After a delay, animate the second car arriving
+//     // Animation sequence with more realistic car movement - modified for frontal view
+// // Animation sequence with side movement for cars
+// const startAnimationSequence = () => {
+//   // After a delay, animate the second car arriving from the side
+//   gsap.to(car2.position, {
+//     x: 6, // Start position far to the right side
+//     z: 10, // Start position behind and to the right
+//     duration: 0, // Immediately set starting position
+//     onComplete: () => {
+//       // Car 2 arrives from the side (right side of screen)
 //       gsap.to(car2.position, {
-//         x: 7,
+//         x: 0, // Move to center on x-axis
+//         z: 4, // Move forward on z-axis
 //         duration: 4,
 //         ease: "power2.inOut",
 //         delay: 3,
@@ -437,9 +467,10 @@
 //           });
 //         },
 //         onComplete: () => {
-//           // First car leaves after second car arrives
+//           // First car leaves - moving to the side (left)
 //           gsap.to(car1.position, {
-//             x: -10,
+//             x: -6, // Moves away to the left side
+//             z: -5, // Moves slightly forward and to the left
 //             duration: 5,
 //             ease: "power1.inOut",
 //             onStart: () => {
@@ -469,7 +500,7 @@
           
 //           // After first car starts leaving, second car moves to charging position
 //           gsap.to(car2.position, {
-//             x: 3,
+//             z: 2, // Same position as car1 had
 //             delay: 1.5,
 //             duration: 3,
 //             ease: "power2.inOut",
@@ -488,7 +519,11 @@
 //             },
 //             onComplete: () => {
 //               // Create new charging cable for car2
-//               const newEndPoint = new THREE.Vector3(car2.position.x - 1.8, 0.5, car2.position.z - 0.7);
+//               const newEndPoint = new THREE.Vector3(
+//                 car2.position.x - 0.9,
+//                 car2.position.y + 0.5,
+//                 car2.position.z - 1.8
+//               );
 //               const newCable = createChargingCable(startPoint, newEndPoint);
 //               scene.add(newCable);
 //               cableRef.current = newCable;
@@ -498,8 +533,8 @@
               
 //               // Reset animation sequence after a delay
 //               setTimeout(() => {
-//                 // Reset car1 position far away to prepare for next cycle
-//                 car1.position.set(15, 0, 0.2);
+//                 // Reset car1 position to the right side to prepare for next cycle
+//                 car1.position.set(6, 0, 10);
                 
 //                 // Reset animation loop
 //                 setTimeout(startAnimationSequence, 5000);
@@ -508,7 +543,9 @@
 //           });
 //         }
 //       });
-//     };
+//     }
+//   });
+// };
     
 //     // Start the animation sequence
 //     startAnimationSequence();
@@ -589,7 +626,8 @@
 //   );
 // };
 
-// export default LandingPage;
+
+// export default EVChargingScene;
 
 
 
@@ -881,11 +919,11 @@ const EVChargingScene = () => {
     scene.add(car1);
     car1Ref.current = car1;
 
-    // Car 2 (arriving) - will come from behind the camera
+    // Car 2 (arriving) - will come from the right side of the screen
     const car2Result = createFerrariCar(0xe11d48); // Red color
     const car2 = car2Result.carGroup;
-    // Car 2 starts off-screen and will come in from the back
-    car2.position.set(0, 0, 15);
+    // Car 2 starts off-screen to the right
+    car2.position.set(12, 0, 2); // Start position far to the right
     car2.rotation.y = Math.PI / 2; // Rotated to face front
     scene.add(car2);
     car2Ref.current = car2;
@@ -1030,11 +1068,11 @@ const EVChargingScene = () => {
     // Start the initial charging effect for car1
     createChargingEffect(car1);
 
-    // Animation sequence with more realistic car movement - modified for frontal view
+    // Animation sequence - UPDATED to move cars horizontally
     const startAnimationSequence = () => {
-      // After a delay, animate the second car arriving from behind the camera
+      // After a delay, animate the second car arriving from the right side
       gsap.to(car2.position, {
-        z: 4, // Comes forward toward camera
+        x: 0, // Moves from right to center
         duration: 4,
         ease: "power2.inOut",
         delay: 3,
@@ -1052,9 +1090,9 @@ const EVChargingScene = () => {
           });
         },
         onComplete: () => {
-          // First car leaves - moving away from camera
+          // First car leaves - moving completely off screen to the left
           gsap.to(car1.position, {
-            z: -10, // Moves away from camera
+            x: -15, // Moves far to the left (completely off screen)
             duration: 5,
             ease: "power1.inOut",
             onStart: () => {
@@ -1084,23 +1122,11 @@ const EVChargingScene = () => {
           
           // After first car starts leaving, second car moves to charging position
           gsap.to(car2.position, {
-            z: 2, // Same position as car1 had
+            x: 0, // Final position at center
+            z: 2, // Adjust z position if needed
             delay: 1.5,
-            duration: 3,
+            duration: 1.5,
             ease: "power2.inOut",
-            onStart: () => {
-              // Animate wheels for car2 as it moves to charging position
-              gsap.to({}, {
-                duration: 3,
-                onUpdate: () => {
-                  wheelsRef.current.forEach(wheel => {
-                    if (wheel && wheel.parent && wheel.parent.parent === car2) {
-                      wheel.rotation.x -= 0.2;
-                    }
-                  });
-                }
-              });
-            },
             onComplete: () => {
               // Create new charging cable for car2
               const newEndPoint = new THREE.Vector3(
@@ -1117,8 +1143,8 @@ const EVChargingScene = () => {
               
               // Reset animation sequence after a delay
               setTimeout(() => {
-                // Reset car1 position far away to prepare for next cycle
-                car1.position.set(0, 0, 15);
+                // Reset car1 position to the right side to prepare for next cycle
+                car1.position.set(12, 0, 2);
                 
                 // Reset animation loop
                 setTimeout(startAnimationSequence, 5000);
