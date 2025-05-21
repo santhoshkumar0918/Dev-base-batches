@@ -30,7 +30,7 @@ export default function DashboardPage() {
     },
   ]);
 
-  const vehicle = mockVehicles[0]; // Default to first vehicle
+  const vehicle = mockVehicles[0];
 
   return (
     <div className="py-6">

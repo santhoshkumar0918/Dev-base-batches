@@ -34,7 +34,6 @@ interface Route {
 export default function ChargingStations({
   route,
   vehicle,
-  batteryStatus,
   onStationSelect,
 }: {
   route: Route | null;
