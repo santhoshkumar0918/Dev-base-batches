@@ -1,169 +1,272 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./interfaces/IStationRegistry.sol";
-import "./interfaces/IUserRegistry.sol";
-import "./libraries/Structs.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract StationRegistry is IStationRegistry, Ownable {
-    IUserRegistry private userRegistry;
+/**
+ * @title StationRegistry
+ * @dev Manages the registration and status of EV charging stations
+ */
+contract StationRegistry is Ownable, ReentrancyGuard {
+    using Counters   for Counters.Counter;
+    Counters.Counter private _stationIds;
     
-    uint256 private stationCounter = 0;
-    mapping(uint256 => Structs.Station) private stations;
-    mapping(address => uint256[]) private stationsByOwner;
-    uint256[] private activeStationIds;
+    enum StationStatus { Available, Busy, Limited, Offline }
     
-    event StationRegistered(uint256 indexed stationId, address indexed owner, string stationType);
-    event ChargerAdded(uint256 indexed stationId, uint256 indexed chargerId, string chargerType, uint256 powerOutput);
-    event ChargerStatusUpdated(uint256 indexed stationId, uint256 indexed chargerId, bool isAvailable);
-    event StationStatusUpdated(uint256 indexed stationId, bool isActive);
-    event StationReputationUpdated(uint256 indexed stationId, uint256 newReputation);
-    
-    constructor(address _userRegistryAddress) Ownable(msg.sender) {
-        userRegistry = IUserRegistry(_userRegistryAddress);
+    struct ChargingStation {
+        uint256 id;
+        address owner;
+        string name;
+        string location;
+        string metadata; // JSON string with additional data (connectors, power, etc.)
+        uint8 powerRating; // kW
+        uint256 pricePerKWh; // in wei
+        StationStatus status;
+        bool isActive;
+        uint256 createdAt;
+        uint256 updatedAt;
+    }
+
+    struct GeoLocation {
+        int256 latitude;  // Multiplied by 1e7 to store as integer
+        int256 longitude; // Multiplied by 1e7 to store as integer
     }
     
-    modifier onlyRegisteredUser() {
-        require(userRegistry.isRegistered(msg.sender), "StationRegistry: user not registered");
-        _;
-    }
+    // Station ID => Station Data
+    mapping(uint256 => ChargingStation) private stations;
     
-    modifier onlyStationOwner(uint256 stationId) {
-        require(stations[stationId].owner == msg.sender, "StationRegistry: not station owner");
-        _;
-    }
+    // Owner address => Station IDs
+    mapping(address => uint256[]) private ownerStations;
+
+    // Mapping to store station geolocation data
+    mapping(uint256 => GeoLocation) private stationLocations;
     
+    // Events
+    event StationRegistered(uint256 indexed stationId, address indexed owner, string name);
+    event StationUpdated(uint256 indexed stationId, address indexed owner);
+    event StationStatusChanged(uint256 indexed stationId, StationStatus status);
+    event StationDeactivated(uint256 indexed stationId);
+    
+    /**
+     * @dev Register a new charging station
+     */
     function registerStation(
-        string memory stationType,
         string memory name,
-        string memory metadata
-    ) external override onlyRegisteredUser returns (uint256) {
-        stationCounter++;
+        string memory location,
+        string memory metadata,
+        uint8 powerRating,
+        uint256 pricePerKWh,
+        int256 latitude,
+        int256 longitude
+    ) external nonReentrant returns (uint256) {
+        _stationIds.increment();
+        uint256 newStationId = _stationIds.current();
         
-        Structs.Station storage newStation = stations[stationCounter];
-        newStation.id = stationCounter;
-        newStation.owner = msg.sender;
-        newStation.stationType = stationType;
-        newStation.name = name;
-        newStation.metadata = metadata;
-        newStation.isActive = true;
-        newStation.registrationTime = block.timestamp;
-        newStation.reputation = 100; // Default reputation
-        
-        stationsByOwner[msg.sender].push(stationCounter);
-        activeStationIds.push(stationCounter);
-        
-        emit StationRegistered(stationCounter, msg.sender, stationType);
-        return stationCounter;
-    }
-    
-    function addCharger(
-        uint256 stationId,
-        string memory chargerType,
-        uint256 powerOutput,
-        uint256 pricePerKWh
-    ) external override onlyStationOwner(stationId) returns (uint256) {
-        Structs.Station storage station = stations[stationId];
-        
-        uint256 chargerId = station.chargers.length + 1;
-        
-        Structs.Charger memory newCharger = Structs.Charger({
-            id: chargerId,
-            stationId: stationId,
-            chargerType: chargerType,
-            powerOutput: powerOutput,
+        stations[newStationId] = ChargingStation({
+            id: newStationId,
+            owner: msg.sender,
+            name: name,
+            location: location,
+            metadata: metadata,
+            powerRating: powerRating,
             pricePerKWh: pricePerKWh,
-            isAvailable: true
+            status: StationStatus.Available,
+            isActive: true,
+            createdAt: block.timestamp,
+            updatedAt: block.timestamp
         });
         
-        station.chargers.push(newCharger);
+        stationLocations[newStationId] = GeoLocation({
+            latitude: latitude,
+            longitude: longitude
+        });
         
-        emit ChargerAdded(stationId, chargerId, chargerType, powerOutput);
-        return chargerId;
+        ownerStations[msg.sender].push(newStationId);
+        
+        emit StationRegistered(newStationId, msg.sender, name);
+        
+        return newStationId;
     }
     
-    function updateChargerStatus(
-        uint256 stationId,
-        uint256 chargerId,
-        bool isAvailable
-    ) external override onlyStationOwner(stationId) {
-        require(chargerId > 0 && chargerId <= stations[stationId].chargers.length, "StationRegistry: invalid charger ID");
+    /**
+     * @dev Update station status
+     */
+    function updateStationStatus(uint256 stationId, StationStatus status) external {
+        require(stations[stationId].owner == msg.sender, "Not station owner");
+        require(stations[stationId].isActive, "Station not active");
         
-        stations[stationId].chargers[chargerId - 1].isAvailable = isAvailable;
+        stations[stationId].status = status;
+        stations[stationId].updatedAt = block.timestamp;
         
-        emit ChargerStatusUpdated(stationId, chargerId, isAvailable);
+        emit StationStatusChanged(stationId, status);
     }
     
-    function updateStationStatus(uint256 stationId, bool isActive) external override onlyStationOwner(stationId) {
-        stations[stationId].isActive = isActive;
+    /**
+     * @dev Update station price
+     */
+    function updateStationPrice(uint256 stationId, uint256 pricePerKWh) external {
+        require(stations[stationId].owner == msg.sender, "Not station owner");
+        require(stations[stationId].isActive, "Station not active");
         
-        // Update active stations list
-        if (isActive) {
-            bool found = false;
-            for (uint256 i = 0; i < activeStationIds.length; i++) {
-                if (activeStationIds[i] == stationId) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                activeStationIds.push(stationId);
-            }
-        } else {
-            for (uint256 i = 0; i < activeStationIds.length; i++) {
-                if (activeStationIds[i] == stationId) {
-                    // Replace with the last element and remove the last element
-                    activeStationIds[i] = activeStationIds[activeStationIds.length - 1];
-                    activeStationIds.pop();
-                    break;
-                }
-            }
-        }
+        stations[stationId].pricePerKWh = pricePerKWh;
+        stations[stationId].updatedAt = block.timestamp;
         
-        emit StationStatusUpdated(stationId, isActive);
+        emit StationUpdated(stationId, msg.sender);
     }
     
-    function getStation(uint256 stationId) external view override returns (Structs.Station memory) {
-        require(stationId > 0 && stationId <= stationCounter, "StationRegistry: invalid station ID");
+    /**
+     * @dev Update station metadata
+     */
+    function updateStationMetadata(uint256 stationId, string memory metadata) external {
+        require(stations[stationId].owner == msg.sender, "Not station owner");
+        require(stations[stationId].isActive, "Station not active");
+        
+        stations[stationId].metadata = metadata;
+        stations[stationId].updatedAt = block.timestamp;
+        
+        emit StationUpdated(stationId, msg.sender);
+    }
+    
+    /**
+     * @dev Deactivate a station
+     */
+    function deactivateStation(uint256 stationId) external {
+        require(stations[stationId].owner == msg.sender, "Not station owner");
+        require(stations[stationId].isActive, "Station already inactive");
+        
+        stations[stationId].isActive = false;
+        stations[stationId].updatedAt = block.timestamp;
+        
+        emit StationDeactivated(stationId);
+    }
+    
+    /**
+     * @dev Get station details
+     */
+    function getStation(uint256 stationId) external view returns (ChargingStation memory) {
+        require(stations[stationId].id == stationId, "Station does not exist");
         return stations[stationId];
     }
     
-    function getCharger(uint256 stationId, uint256 chargerId) external view override returns (Structs.Charger memory) {
-        require(stationId > 0 && stationId <= stationCounter, "StationRegistry: invalid station ID");
-        require(chargerId > 0 && chargerId <= stations[stationId].chargers.length, "StationRegistry: invalid charger ID");
+    /**
+     * @dev Get station location
+     */
+    function getStationLocation(uint256 stationId) external view returns (GeoLocation memory) {
+        require(stations[stationId].id == stationId, "Station does not exist");
+        return stationLocations[stationId];
+    }
+    
+    /**
+     * @dev Get all stations owned by an address
+     */
+    function getStationsByOwner(address owner) external view returns (uint256[] memory) {
+        return ownerStations[owner];
+    }
+    
+    /**
+     * @dev Get all active stations
+     */
+    function getAllActiveStations() external view returns (uint256[] memory) {
+        uint256 count = 0;
         
-        return stations[stationId].chargers[chargerId - 1];
-    }
-    
-    function getStationsByOwner(address owner) external view override returns (uint256[] memory) {
-        return stationsByOwner[owner];
-    }
-    
-    function getActiveStations() external view override returns (uint256[] memory) {
-        return activeStationIds;
-    }
-    
-    function updateStationReputation(uint256 stationId, uint256 reputationChange, bool isPositive) external override {
-        require(msg.sender == owner() || msg.sender == address(this), "StationRegistry: not authorized");
-        require(stationId > 0 && stationId <= stationCounter, "StationRegistry: invalid station ID");
-        
-        if (isPositive) {
-            stations[stationId].reputation += reputationChange;
-        } else {
-            // Ensure reputation doesn't go below zero
-            if (stations[stationId].reputation < reputationChange) {
-                stations[stationId].reputation = 0;
-            } else {
-                stations[stationId].reputation -= reputationChange;
+        // Count active stations
+        for (uint256 i = 1; i <= _stationIds.current(); i++) {
+            if (stations[i].isActive) {
+                count++;
             }
         }
         
-        emit StationReputationUpdated(stationId, stations[stationId].reputation);
+        uint256[] memory result = new uint256[](count);
+        uint256 resultIndex = 0;
+        
+        // Fill result array
+        for (uint256 i = 1; i <= _stationIds.current() && resultIndex < count; i++) {
+            if (stations[i].isActive) {
+                result[resultIndex] = i;
+                resultIndex++;
+            }
+        }
+        
+        return result;
     }
     
-    function getChargersCount(uint256 stationId) external view returns (uint256) {
-        require(stationId > 0 && stationId <= stationCounter, "StationRegistry: invalid station ID");
-        return stations[stationId].chargers.length;
+    /**
+     * @dev Calculate distance between two points (haversine formula)
+     * For journey planning optimization
+     */
+    function calculateDistance(int256 lat1, int256 lon1, int256 lat2, int256 lon2) public pure returns (uint256) {
+        // Implementation of haversine formula
+        // This is a simplified version; in production you'd want a more accurate calculation
+        
+        // Convert to radians
+        int256 latDiff = lat2 - lat1;
+        int256 lonDiff = lon2 - lon1;
+        
+        // Return simplified distance metric (not actual km)
+        return uint256((latDiff * latDiff) + (lonDiff * lonDiff));
+    }
+    
+    /**
+     * @dev Find stations along a route
+     * @param startLat Starting latitude (multiplied by 1e7)
+     * @param startLon Starting longitude (multiplied by 1e7)
+     * @param endLat Ending latitude (multiplied by 1e7)
+     * @param endLon Ending longitude (multiplied by 1e7)
+     * @param maxDistance Maximum distance from route to find stations
+     * @param maxResults Maximum number of stations to return
+     */
+    function findStationsAlongRoute(
+        int256 startLat, 
+        int256 startLon, 
+        int256 endLat, 
+        int256 endLon,
+        uint256 maxDistance,
+        uint256 maxResults
+    ) external view returns (uint256[] memory) {
+        // This is a simplified implementation
+        // In a real application, you'd want a more sophisticated route calculation
+        
+        uint256[] memory stationIds = new uint256[](maxResults);
+        uint256 resultCount = 0;
+        
+        for (uint256 i = 1; i <= _stationIds.current() && resultCount < maxResults; i++) {
+            if (stations[i].isActive) {
+                GeoLocation memory loc = stationLocations[i];
+                
+                // Calculate distance from start and end points
+                uint256 distanceFromStart = calculateDistance(startLat, startLon, loc.latitude, loc.longitude);
+                uint256 distanceFromEnd = calculateDistance(endLat, endLon, loc.latitude, loc.longitude);
+                
+                // Simplified check: if station is near either start or end point
+                // or somewhere in between (based on rectangular bounding box)
+                if (distanceFromStart <= maxDistance || 
+                    distanceFromEnd <= maxDistance ||
+                    (isBetween(loc.latitude, startLat, endLat, maxDistance) && 
+                     isBetween(loc.longitude, startLon, endLon, maxDistance))) {
+                    
+                    stationIds[resultCount] = i;
+                    resultCount++;
+                }
+            }
+        }
+        
+        // Resize array to actual result count
+        assembly {
+            mstore(stationIds, resultCount)
+        }
+        
+        return stationIds;
+    }
+    
+    /**
+     * @dev Check if a coordinate is between two points (with buffer)
+     */
+    function isBetween(int256 value, int256 bound1, int256 bound2, uint256 buffer) internal pure returns (bool) {
+        int256 min = bound1 < bound2 ? bound1 : bound2;
+        int256 max = bound1 > bound2 ? bound1 : bound2;
+        
+        return (value >= min - int256(buffer)) && (value <= max + int256(buffer));
     }
 }
