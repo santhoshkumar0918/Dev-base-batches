@@ -5,14 +5,7 @@ import { useState, useEffect } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import Link from "next/link";
-import {
-  Zap,
-  User,
-  ChevronDown,
-  LogOut,
-  Settings,
-  Home
-} from "lucide-react";
+import { Zap, User, ChevronDown, LogOut, Settings, Home } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,12 +20,12 @@ import {
 const Header = () => {
   const { isConnected, address } = useAccount();
   const [isMounted, setIsMounted] = useState(false);
-  
+
   // Handle hydration issues with NextJS
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  
+
   // If the component hasn't mounted yet (client-side), don't render wallet-related elements
   if (!isMounted) {
     return (
@@ -42,7 +35,7 @@ const Header = () => {
             <Zap className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold">DEV</span>
           </div>
-          
+
           <nav className="hidden md:flex gap-8 font-medium">
             <Link
               href="/"
@@ -51,10 +44,10 @@ const Header = () => {
               Home
             </Link>
             <Link
-              href="#features"
+              href="/dashboard"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              Features
+              Dashboard
             </Link>
             <Link
               href="#how-it-works"
@@ -69,7 +62,7 @@ const Header = () => {
               Join Network
             </Link>
           </nav>
-          
+
           <div className="flex items-center gap-4">
             <Link href="/register">
               <Button variant="outline" size="sm">
@@ -77,7 +70,9 @@ const Header = () => {
               </Button>
             </Link>
             {/* Placeholder for wallet connection */}
-            <Button variant="default" size="sm">Connect</Button>
+            <Button variant="default" size="sm">
+              Connect
+            </Button>
           </div>
         </div>
       </header>
@@ -100,10 +95,10 @@ const Header = () => {
             Home
           </Link>
           <Link
-            href="#features"
+            href="/dashboard"
             className="text-muted-foreground hover:text-primary transition-colors"
           >
-            Features
+            Dashboard
           </Link>
           <Link
             href="#how-it-works"
@@ -128,11 +123,18 @@ const Header = () => {
                 </Button>
               </Link>
               <ConnectButton.Custom>
-                {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+                {({
+                  account,
+                  chain,
+                  openAccountModal,
+                  openChainModal,
+                  openConnectModal,
+                  mounted,
+                }) => {
                   return (
-                    <Button 
-                      variant="default" 
-                      size="sm" 
+                    <Button
+                      variant="default"
+                      size="sm"
                       onClick={openConnectModal}
                     >
                       Connect Wallet
@@ -145,7 +147,10 @@ const Header = () => {
             <div className="flex items-center gap-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-muted">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-2 rounded-full px-3 py-2 hover:bg-muted"
+                  >
                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                       <User className="h-4 w-4 text-primary" />
                     </div>
