@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./ChargingStationManager.sol";
 
 contract BookingManager is ReentrancyGuard {
-    using Counters for Counters.Counter;
-    Counters.Counter private _bookingIds;
+    uint256 private _bookingIdCounter;
 
     ChargingStationManager public chargingStationManager;
 
@@ -44,6 +42,7 @@ contract BookingManager is ReentrancyGuard {
 
     constructor(address _chargingStationManager) {
         chargingStationManager = ChargingStationManager(_chargingStationManager);
+        _bookingIdCounter = 0;
     }
 
     function createBooking(
@@ -61,8 +60,8 @@ contract BookingManager is ReentrancyGuard {
         require(stationSlotBookings[_stationId][_slotNumber] == 0, "Slot already booked for this time");
         require(_scheduledStartTime > block.timestamp, "Cannot book in the past");
 
-        _bookingIds.increment();
-        uint256 bookingId = _bookingIds.current();
+        _bookingIdCounter++;
+        uint256 bookingId = _bookingIdCounter;
 
         uint256 scheduledEndTime = _scheduledStartTime + _estimatedChargingDuration;
 
@@ -202,5 +201,9 @@ contract BookingManager is ReentrancyGuard {
 
         return (_endTime <= existingBooking.scheduledStartTime || 
                 _startTime >= existingBooking.scheduledEndTime);
+    }
+
+    function getCurrentBookingId() external view returns (uint256) {
+        return _bookingIdCounter;
     }
 }
