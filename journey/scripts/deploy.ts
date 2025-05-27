@@ -7,39 +7,43 @@ async function main() {
   // Get the deployer account
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with account:", deployer.address);
-  const balance = await deployer.provider.getBalance(deployer.address);
+  const balance = await ethers.provider.getBalance(deployer.address);
   console.log("Account balance:", balance.toString());
 
   // Deploy VehicleRegistry
   console.log("\n📱 Deploying VehicleRegistry...");
   const VehicleRegistry = await ethers.getContractFactory("VehicleRegistry");
   const vehicleRegistry = await VehicleRegistry.deploy();
-  await vehicleRegistry.deployed();
-  console.log("✅ VehicleRegistry deployed to:", vehicleRegistry.address);
+  await vehicleRegistry.waitForDeployment();
+  const vehicleRegistryAddress = await vehicleRegistry.getAddress();
+  console.log("✅ VehicleRegistry deployed to:", vehicleRegistryAddress);
 
   // Deploy ChargingStationManager
   console.log("\n🔌 Deploying ChargingStationManager...");
   const ChargingStationManager = await ethers.getContractFactory("ChargingStationManager");
   const chargingStationManager = await ChargingStationManager.deploy();
-  await chargingStationManager.deployed();
-  console.log("✅ ChargingStationManager deployed to:", chargingStationManager.address);
+  await chargingStationManager.waitForDeployment();
+  const chargingStationManagerAddress = await chargingStationManager.getAddress();
+  console.log("✅ ChargingStationManager deployed to:", chargingStationManagerAddress);
 
   // Deploy JourneyPlanner
   console.log("\n🗺️ Deploying JourneyPlanner...");
   const JourneyPlanner = await ethers.getContractFactory("JourneyPlanner");
   const journeyPlanner = await JourneyPlanner.deploy(
-    vehicleRegistry.address,
-    chargingStationManager.address
+    vehicleRegistryAddress,
+    chargingStationManagerAddress
   );
-  await journeyPlanner.deployed();
-  console.log("✅ JourneyPlanner deployed to:", journeyPlanner.address);
+  await journeyPlanner.waitForDeployment();
+  const journeyPlannerAddress = await journeyPlanner.getAddress();
+  console.log("✅ JourneyPlanner deployed to:", journeyPlannerAddress);
 
   // Deploy BookingManager
   console.log("\n📅 Deploying BookingManager...");
   const BookingManager = await ethers.getContractFactory("BookingManager");
-  const bookingManager = await BookingManager.deploy(chargingStationManager.address);
-  await bookingManager.deployed();
-  console.log("✅ BookingManager deployed to:", bookingManager.address);
+  const bookingManager = await BookingManager.deploy(chargingStationManagerAddress);
+  await bookingManager.waitForDeployment();
+  const bookingManagerAddress = await bookingManager.getAddress();
+  console.log("✅ BookingManager deployed to:", bookingManagerAddress);
 
   // Initialize with some sample data
   console.log("\n🔧 Initializing contracts with sample data...");
@@ -58,8 +62,8 @@ async function main() {
     11970000, // Latitude * 1000000
     79510000, // Longitude * 1000000
     4, // Total slots
-    utils.parseUnits("0.12", "ether"), // Price per kWh in ETH
-    ethers.utils.parseUnits("0.12", "ether"), // Price per kWh in ETH
+    120, // Power capacity in kW
+    ethers.parseUnits("0.12", "ether"), // Price per kWh in ETH
     ["Restroom", "Café", "WiFi"]
   );
 
@@ -70,7 +74,7 @@ async function main() {
     78120000,
     6,
     120,
-    ethers.utils.parseUnits("0.10", "ether"),
+    ethers.parseUnits("0.10", "ether"),
     ["Restaurant", "Shopping", "Restroom"]
   );
 
@@ -81,28 +85,32 @@ async function main() {
     80270000,
     8,
     180,
-    ethers.utils.parseUnits("0.15", "ether"),
+    ethers.parseUnits("0.15", "ether"),
     ["Food Court", "Rest Area", "WiFi", "Shopping"]
   );
 
   console.log("✅ Sample charging stations added");
 
   // Save deployment addresses
+  const network = await ethers.provider.getNetwork();
   const deploymentInfo = {
-    network: await ethers.provider.getNetwork(),
+    network: {
+      name: network.name,
+      chainId: network.chainId.toString()
+    },
     timestamp: new Date().toISOString(),
     deployer: deployer.address,
     contracts: {
-      VehicleRegistry: vehicleRegistry.address,
-      ChargingStationManager: chargingStationManager.address,
-      JourneyPlanner: journeyPlanner.address,
-      BookingManager: bookingManager.address,
+      VehicleRegistry: vehicleRegistryAddress,
+      ChargingStationManager: chargingStationManagerAddress,
+      JourneyPlanner: journeyPlannerAddress,
+      BookingManager: bookingManagerAddress,
     },
     abis: {
-      VehicleRegistry: VehicleRegistry.interface.format(true),
-      ChargingStationManager: ChargingStationManager.interface.format(true),
-      JourneyPlanner: JourneyPlanner.interface.format(true),
-      BookingManager: BookingManager.interface.format(true),
+      VehicleRegistry: VehicleRegistry.interface.formatJson(),
+      ChargingStationManager: ChargingStationManager.interface.formatJson(),
+      JourneyPlanner: JourneyPlanner.interface.formatJson(),
+      BookingManager: BookingManager.interface.formatJson(),
     }
   };
 
@@ -114,10 +122,10 @@ async function main() {
   console.log("\n🎉 Deployment completed successfully!");
   console.log("📄 Deployment info saved to deployment-info.json");
   console.log("\n📋 Contract Addresses:");
-  console.log("VehicleRegistry:", vehicleRegistry.address);
-  console.log("ChargingStationManager:", chargingStationManager.address);
-  console.log("JourneyPlanner:", journeyPlanner.address);
-  console.log("BookingManager:", bookingManager.address);
+  console.log("VehicleRegistry:", vehicleRegistryAddress);
+  console.log("ChargingStationManager:", chargingStationManagerAddress);
+  console.log("JourneyPlanner:", journeyPlannerAddress);
+  console.log("BookingManager:", bookingManagerAddress);
 }
 
 main()
