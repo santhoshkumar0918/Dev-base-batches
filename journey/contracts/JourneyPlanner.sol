@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "./VehicleRegistry.sol";
 import "./ChargingStationManager.sol";
 
 contract JourneyPlanner {
-    using Counters for Counters.Counter;
-    Counters.Counter private _journeyIds;
+    uint256 private _journeyIdCounter;
 
     VehicleRegistry public vehicleRegistry;
     ChargingStationManager public chargingStationManager;
@@ -52,6 +50,7 @@ contract JourneyPlanner {
     constructor(address _vehicleRegistry, address _chargingStationManager) {
         vehicleRegistry = VehicleRegistry(_vehicleRegistry);
         chargingStationManager = ChargingStationManager(_chargingStationManager);
+        _journeyIdCounter = 0;
     }
 
     function planJourney(
@@ -67,8 +66,8 @@ contract JourneyPlanner {
         VehicleRegistry.UserVehicle[] memory userVehicles = vehicleRegistry.getUserVehicles(msg.sender);
         require(_userVehicleIndex < userVehicles.length, "Invalid vehicle index");
 
-        _journeyIds.increment();
-        uint256 journeyId = _journeyIds.current();
+        _journeyIdCounter++;
+        uint256 journeyId = _journeyIdCounter;
 
         VehicleRegistry.UserVehicle memory userVehicle = userVehicles[_userVehicleIndex];
 
@@ -157,5 +156,9 @@ contract JourneyPlanner {
         }
         
         return recommendedStations;
+    }
+
+    function getCurrentJourneyId() external view returns (uint256) {
+        return _journeyIdCounter;
     }
 }

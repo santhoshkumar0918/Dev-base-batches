@@ -2,11 +2,9 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract VehicleRegistry is Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _vehicleIds;
+    uint256 private _vehicleIdCounter;
 
     struct Vehicle {
         uint256 id;
@@ -35,7 +33,9 @@ contract VehicleRegistry is Ownable {
     event UserVehicleRegistered(address indexed user, uint256 indexed vehicleId, string licensePlate);
     event BatteryLevelUpdated(address indexed user, uint256 indexed userVehicleIndex, uint256 batteryLevel);
 
-    constructor() {}
+    constructor() Ownable(msg.sender) {
+        _vehicleIdCounter = 0;
+    }
 
     function addVehicle(
         string memory _model,
@@ -44,8 +44,8 @@ contract VehicleRegistry is Ownable {
         uint256 _range,
         uint256 _chargingSpeed
     ) external onlyOwner {
-        _vehicleIds.increment();
-        uint256 vehicleId = _vehicleIds.current();
+        _vehicleIdCounter++;
+        uint256 vehicleId = _vehicleIdCounter;
 
         vehicles[vehicleId] = Vehicle({
             id: vehicleId,
@@ -102,6 +102,10 @@ contract VehicleRegistry is Ownable {
     }
 
     function getTotalVehicles() external view returns (uint256) {
-        return _vehicleIds.current();
+        return _vehicleIdCounter;
+    }
+
+    function getCurrentVehicleId() external view returns (uint256) {
+        return _vehicleIdCounter;
     }
 }

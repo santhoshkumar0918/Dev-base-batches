@@ -2,11 +2,9 @@
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ChargingStationManager is Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _stationIds;
+    uint256 private _stationIdCounter;
 
     struct ChargingStation {
         uint256 id;
@@ -42,7 +40,9 @@ contract ChargingStationManager is Ownable {
     event SlotReleased(uint256 indexed stationId, uint256 indexed slotNumber);
     event AvailabilityUpdated(uint256 indexed stationId, uint256 availableSlots);
 
-    constructor() {}
+    constructor() Ownable(msg.sender) {
+        _stationIdCounter = 0;
+    }
 
     function addChargingStation(
         string memory _name,
@@ -54,8 +54,8 @@ contract ChargingStationManager is Ownable {
         uint256 _pricePerKwh,
         string[] memory _amenities
     ) external onlyOwner {
-        _stationIds.increment();
-        uint256 stationId = _stationIds.current();
+        _stationIdCounter++;
+        uint256 stationId = _stationIdCounter;
 
         chargingStations[stationId] = ChargingStation({
             id: stationId,
@@ -140,8 +140,8 @@ contract ChargingStationManager is Ownable {
     }
 
     function getAllChargingStations() external view returns (ChargingStation[] memory) {
-        ChargingStation[] memory stations = new ChargingStation[](_stationIds.current());
-        for (uint256 i = 1; i <= _stationIds.current(); i++) {
+        ChargingStation[] memory stations = new ChargingStation[](_stationIdCounter);
+        for (uint256 i = 1; i <= _stationIdCounter; i++) {
             if (stationExists[i] && chargingStations[i].isActive) {
                 stations[i-1] = chargingStations[i];
             }
@@ -152,5 +152,9 @@ contract ChargingStationManager is Ownable {
     function updateStationAvailability(uint256 _stationId, bool _isActive) external onlyOwner {
         require(stationExists[_stationId], "Station does not exist");
         chargingStations[_stationId].isActive = _isActive;
+    }
+
+    function getCurrentStationId() external view returns (uint256) {
+        return _stationIdCounter;
     }
 }
