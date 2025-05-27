@@ -7,7 +7,8 @@ async function main() {
   // Get the deployer account
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with account:", deployer.address);
-  console.log("Account balance:", (await deployer.getBalance()).toString());
+  const balance = await deployer.provider.getBalance(deployer.address);
+  console.log("Account balance:", balance.toString());
 
   // Deploy VehicleRegistry
   console.log("\n📱 Deploying VehicleRegistry...");
@@ -57,7 +58,7 @@ async function main() {
     11970000, // Latitude * 1000000
     79510000, // Longitude * 1000000
     4, // Total slots
-    150, // Charging speed in kW
+    utils.parseUnits("0.12", "ether"), // Price per kWh in ETH
     ethers.utils.parseUnits("0.12", "ether"), // Price per kWh in ETH
     ["Restroom", "Café", "WiFi"]
   );
@@ -98,10 +99,10 @@ async function main() {
       BookingManager: bookingManager.address,
     },
     abis: {
-      VehicleRegistry: VehicleRegistry.interface.format("json"),
-      ChargingStationManager: ChargingStationManager.interface.format("json"),
-      JourneyPlanner: JourneyPlanner.interface.format("json"),
-      BookingManager: BookingManager.interface.format("json"),
+      VehicleRegistry: VehicleRegistry.interface.format(true),
+      ChargingStationManager: ChargingStationManager.interface.format(true),
+      JourneyPlanner: JourneyPlanner.interface.format(true),
+      BookingManager: BookingManager.interface.format(true),
     }
   };
 

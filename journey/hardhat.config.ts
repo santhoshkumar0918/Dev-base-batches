@@ -1,38 +1,49 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "@nomiclabs/hardhat-etherscan";
 import "dotenv/config";
+
+// Load environment variables
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+const POLYGON_AMOY_RPC_URL =
+  process.env.POLYGON_AMOY_RPC_URL || "https://rpc-amoy.polygon.technology/";
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "";
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.19",
+    version: "0.8.28",
     settings: {
       optimizer: {
         enabled: true,
         runs: 200,
       },
+      viaIR: true,
+      evmVersion: "paris",
     },
   },
   networks: {
-    hardhat: {
-      chainId: 1337,
-    },
-    polygon: {
-      url: process.env.POLYGON_RPC_URL || "https://polygon-rpc.com/",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 137,
-    },
-    mumbai: {
-      url: process.env.MUMBAI_RPC_URL || "https://rpc-mumbai.maticvigil.com/",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 80001,
+    hardhat: {},
+    polygonAmoy: {
+      url: POLYGON_AMOY_RPC_URL,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+      chainId: 80002,
+      gasPrice: "auto",
+      timeout: 60000, // 60 seconds
     },
   },
   etherscan: {
     apiKey: {
-      polygon: process.env.POLYGONSCAN_API_KEY || "",
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY || "",
+      polygonAmoy: POLYGONSCAN_API_KEY,
     },
+    customChains: [
+      {
+        network: "polygonAmoy",
+        chainId: 80002,
+        urls: {
+          apiURL: "https://api-amoy.polygonscan.com/api",
+          browserURL: "https://amoy.polygonscan.com/",
+        },
+      },
+    ],
   },
   paths: {
     sources: "./contracts",
