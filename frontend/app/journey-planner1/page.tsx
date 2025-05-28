@@ -1386,7 +1386,7 @@ const CONTRACT_ADDRESSES = {
 
 // Sonic Blaze Testnet configuration
 const SONIC_BLAZE_TESTNET = {
-  chainId: '0xDEDE', // 1013 in decimal
+  chainId: '0xDEFE', // 1013 in decimal
   chainName: 'Sonic Blaze Testnet',
   nativeCurrency: {
     name: 'Sonic',
