@@ -1386,7 +1386,7 @@ const CONTRACT_ADDRESSES = {
 
 // Sonic Blaze Testnet configuration
 const SONIC_BLAZE_TESTNET = {
-  chainId: '0x3F5', // 1013 in decimal
+  chainId: '0xDEDE', // 1013 in decimal
   chainName: 'Sonic Blaze Testnet',
   nativeCurrency: {
     name: 'Sonic',
@@ -1394,7 +1394,7 @@ const SONIC_BLAZE_TESTNET = {
     decimals: 18,
   },
   rpcUrls: ['https://rpc.blaze.soniclabs.com'],
-  blockExplorerUrls: ['https://blaze-explorer.soniclabs.com'],
+  blockExplorerUrls: ['https://testnet.sonicscan.org'],
 };
 
 
@@ -1848,22 +1848,20 @@ export default function SonicJourneyPlanner() {
                 </div>
               </div>
               
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle</label>
-                  <select
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    value={selectedVehicle}
-                    onChange={(e) => setSelectedVehicle(e.target.value)}
-                  >
-                    <option value="">Select Vehicle</option>
-                    {userVehicles.map((vehicle, index) => (
-                      <option key={index} value={index.toString()}>
-                        {vehicle.licensePlate} - Vehicle ID: {vehicle.vehicleId.toString()}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+               <div className="space-y-6">
+                 <div>
+                   <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Model</label>
+                   <select
+                     className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                     value={selectedVehicle}
+                     onChange={(e) => setSelectedVehicle(e.target.value)}
+                   >
+                     <option value="">Select Vehicle</option>
+                     <option value="0">Tesla Model 3</option>
+                     <option value="1">Nissan Leaf</option>
+                     <option value="2">BMW i3</option>
+                   </select>
+                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Current Battery Level</label>
